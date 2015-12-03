@@ -4,6 +4,7 @@ var fs = require('fs')
 var path = require('path')
 var settings = require('settings')()
 var tinycolor = require('mod')('js-tinycolor')
+var ModManager = require('mod')('mod-manager')
 
 var readLocalFile = function(name) {
   return fs.readFileSync(path.join(__dirname, name))
@@ -19,10 +20,17 @@ var convertNumber = function(number) {
 }
 
 var hueOffset = convertNumber(settings.hue)
+var saturationOffset = convertNumber(settings.saturation)
+var lightnessOffset = convertNumber(settings.lightness)
+
 var convertColor = function(color) {
   var argb = tinycolor(color).toRgb()
   var hsl = RM_rgbToHsl(argb.r, argb.g, argb.b)
-  var rgb = RM_hslToRgb(((hsl[0] + hueOffset) % 360 + 360) % 360, hsl[1], hsl[2])
+  var rgb = RM_hslToRgb(
+    ((hsl[0] + hueOffset) % 360 + 360) % 360,
+    Math.max(Math.min(1, hsl[1] + saturationOffset / 255), 0),
+    Math.max(Math.min(255, hsl[2] + lightnessOffset), 0)
+  )
   return tinycolor({ r: rgb[0], g: rgb[1], b: rgb[2], a: argb.a}).toHex8String()
 }
 
@@ -76,3 +84,16 @@ var gradient = _.find(qml.getObjectsByDescribe("Rectangle"), function(i) {
 gradient[0].node.object("color", 'Qt.lighter(pal.buttonTwinkling, 1.8)')
 gradient[1].node.object("color", 'Qt.lighter(pal.buttonTwinkling, 1.5)')
 qml.save()
+
+;[
+  "ModManager/Settings/colorized/HSLImageClip.qml.js",
+  "ModManager/Settings/colorized/Tab_WYSIWYG.qml",
+].forEach(function(i) {
+  if (path.extname(i) == ".js" && path.extname(path.basename(i, ".js")) == ".qml") {
+    require("./" + i)
+  } else {
+    ModAPI.add(i, readLocalFile(i))
+  }
+})
+
+ModManager.registerSettingPanel("WYSIWYG", "Tab_WYSIWYG")
