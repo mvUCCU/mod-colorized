@@ -1,0 +1,10 @@
+{
+  "name": "colorized",
+  "version": "0.0.0",
+  "description": "Colorize your Maker",
+  "dependencies": {
+    "js-tinycolor": ">=1.3.0"
+  },
+  "author": "orzFly",
+  "homepage": "https://github.com/RMMVMod/mod-colorized"
+}
