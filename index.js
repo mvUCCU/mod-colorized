@@ -50,10 +50,18 @@ var colors = {
   checkMark:       "#4466aa",
   dropTarget:      "#ffee60",
   progressBar:     "#4499dd",
+  buttonTwinkling: "#38d",
 }
 
 var qml = ModAPI.QMLFile("BasicControls/Palette.qml")
 var node = qml.root.node
+
+var buttonTwinkling = node.publicMember("buttonTwinkling")
+buttonTwinkling.kind = "property"
+buttonTwinkling.returnType = "color"
+buttonTwinkling.readOnly = true
+buttonTwinkling.statement = '"#38d"'
+
 _.forEach(colors, function(color, key) {
   node.publicMember(key).statement = JSON.stringify(convertColor(color))
 })
@@ -65,6 +73,6 @@ var gradient = _.find(qml.getObjectsByDescribe("Rectangle"), function(i) {
   if (!visible) return
   return String(visible.value).indexOf("twinklingVisible") > -1
 }).node.object("gradient").node.objects
-gradient[0].node.object("color", 'Qt.lighter(' + JSON.stringify(convertColor("#38d")) + ', 1.8)')
-gradient[1].node.object("color", 'Qt.lighter(' + JSON.stringify(convertColor("#38d")) + ', 1.5)')
+gradient[0].node.object("color", 'Qt.lighter(pal.buttonTwinkling, 1.8)')
+gradient[1].node.object("color", 'Qt.lighter(pal.buttonTwinkling, 1.5)')
 qml.save()
