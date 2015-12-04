@@ -86,7 +86,7 @@ gradient[1].node.object("color", 'Qt.lighter(pal.buttonTwinkling, 1.5)')
 qml.save()
 
 ;[
-  "ModManager/Settings/colorized/HSLImageClip.qml.js",
+  "ModManager/Settings/colorized/HSLImageClip.qml",
   "ModManager/Settings/colorized/Tab_WYSIWYG.qml",
 ].forEach(function(i) {
   if (path.extname(i) == ".js" && path.extname(path.basename(i, ".js")) == ".qml") {
