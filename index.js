@@ -61,28 +61,24 @@ var colors = {
   buttonTwinkling: "#38d",
 }
 
-var qml = ModAPI.QMLFile("BasicControls/Palette.qml")
-var node = qml.root.node
+var qml = ModAPI.QMLFileV2("BasicControls/Palette.qml")
+var node = qml.root
 
-var buttonTwinkling = node.publicMember("buttonTwinkling")
-buttonTwinkling.kind = "property"
-buttonTwinkling.returnType = "color"
-buttonTwinkling.readOnly = true
-buttonTwinkling.statement = '"#38d"'
+var buttonTwinkling = node.def("buttonTwinkling", "Property", '"#38d"').ret("color").readonly(true)
 
 _.forEach(colors, function(color, key) {
-  node.publicMember(key).statement = JSON.stringify(convertColor(color))
+  node.set(key,JSON.stringify(convertColor(color)))
 })
 qml.save()
 
-var qml = ModAPI.QMLFile("BasicControls/ButtonImage.qml")
-var gradient = _.find(qml.getObjectsByDescribe("Rectangle"), function(i) {
-  var visible = _.find(i.node.objects, {name: "visible"})
-  if (!visible) return
-  return String(visible.value).indexOf("twinklingVisible") > -1
-}).node.object("gradient").node.objects
-gradient[0].node.object("color", 'Qt.lighter(pal.buttonTwinkling, 1.8)')
-gradient[1].node.object("color", 'Qt.lighter(pal.buttonTwinkling, 1.5)')
+var qml = ModAPI.QMLFileV2("BasicControls/ButtonImage.qml")
+var gradient = _.find(qml.root.getObjectsByType("Rectangle"), function(i) {
+  if (!i.exists('visible'))
+    return
+  return String(i.get('visible')).indexOf("twinklingVisible") > -1
+}).get("gradient").obj()
+gradient[0].set("color", 'Qt.lighter(pal.buttonTwinkling, 1.8)')
+gradient[1].set("color", 'Qt.lighter(pal.buttonTwinkling, 1.5)')
 qml.save()
 
 ;[
@@ -95,5 +91,4 @@ qml.save()
     ModAPI.add(i, readLocalFile(i))
   }
 })
-
 ModManager.registerSettingPanel("WYSIWYG", "Tab_WYSIWYG")
